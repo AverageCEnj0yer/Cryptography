@@ -9,12 +9,6 @@
 
 //Cryptography lab turned into mini UTF encoding library project!
 
-// [[maybe_unused]] constexpr std::array gg_ralph = {
-//     U'A', U'Ă', U'Â', U'B', U'C', U'D', U'E', U'F', U'G', U'H', U'I', 
-//     U'Î', U'J', U'K', U'L', U'M', U'N', U'O', U'P', U'Q', U'R', U'S', 
-//     U'Ș', U'T', U'Ț', U'U', U'V', U'W', U'X', U'Y', U'Z'
-// };
-
 constexpr std::u32string_view g_ralph = U"AĂÂBCDEFGHIÎJKLMNOPQRSȘTȚUVWXYZ";
 constexpr std::u32string_view g_ralph_lower = U"aăâbcdefghiîjklmnopqrsștțuvwxyz";
 constexpr long long emptySpace{U' '};
@@ -278,7 +272,6 @@ std::string getMessage()
 
 }
 
-
 //Normal caesar
 std::string caesarCipher(
     std::string_view message,
@@ -331,15 +324,163 @@ std::string caesarCipher(
 
     return utf32_to_utf8(result);
 }
-
-
-
-int main()
+//caesar with permutation
+std::string caesarPermutationCipher(
+    std::string_view message,
+    int key,
+    std::string_view keyword,
+    bool decrypt = false)
 {
+    //convert/normalize keyword
+    std::u32string keyword32{utf8_to_utf32(keyword)};
+    normalize(keyword32);
 
+    //keyword must be at least 7 characters
+    if (keyword32.size() < 7)
+    {
+        std::cerr
+            << "Keyword must contain at least 7 characters.\n";
+        std::exit(1);
+    }
+
+    // Keyword may contain ONLY Romanian letters
+    for (char32_t c : keyword32)
+    {
+        if (g_ralph.find(c) == std::u32string_view::npos)
+        {
+            std::cerr
+                << "Invalid character in keyword: "
+                << utf32_to_utf8(std::u32string(1, c))
+                << '\n';
+
+            std::exit(1);
+        }
+    }
+
+    //build permuted alphabet
+    std::u32string permuted{};
+    permuted.reserve(g_ralph.size());
+
+    // First: distinct letters from keyword
+    for (char32_t c : keyword32)
+    {
+        if (permuted.find(c) == std::u32string::npos)
+            permuted.push_back(c);
+    }
+
+    // Then: remaining Romanian letters in natural order
+    for (char32_t c : g_ralph)
+    {
+        if (permuted.find(c) == std::u32string::npos)
+            permuted.push_back(c);
+    }
+
+    // Printing the new alphabet
+    std::cout
+        << "Permuted alphabet: "
+        << utf32_to_utf8(permuted)
+        << '\n';
+
+
+    //==========encrypt/decrypt message==========
+    std::u32string text{utf8_to_utf32(message)};
+    normalize(text);
+
+    std::erase(text, U' ');
+
+    std::u32string result{};
+    result.reserve(text.size());
+
+    for (char32_t c : text)
+    {
+        auto pos = permuted.find(c);
+
+        if (pos == std::u32string::npos)
+        {
+            std::cerr
+                << "Invalid Romanian character: "
+                << utf32_to_utf8(std::u32string(1, c))
+                << '\n';
+
+            std::exit(1);
+        }
+
+        std::size_t newPos{};
+
+        if (!decrypt)
+        {
+            newPos =
+                (pos + static_cast<std::size_t>(key))
+                % permuted.size();
+        }
+        else
+        {
+            newPos =
+                (pos + permuted.size()
+                 - static_cast<std::size_t>(key))
+                % permuted.size();
+        }
+
+        result.push_back(permuted[newPos]);
+    }
+
+    return utf32_to_utf8(result);
+}
+
+void begin(int nrKeys)
+{
     std::string input{getMessage()};
+    int key{getInt()};
 
-    std::cout << input;
-    [[maybe_unused]] int key{getInt()};
+    switch (nrKeys)
+    {
+    case 1:
+    {
+        std::cout << "Result: "
+                  << caesarCipher(input, key)
+                  << '\n';
+        break;
+    }
+
+    case 2:
+    {
+        std::cout << "Enter keyword: ";
+        std::string keyword{};
+        std::getline(std::cin >> std::ws, keyword);
+
+        std::cout << "Result: "
+                  << caesarPermutationCipher(input, key, keyword)
+                  << '\n';
+        break;
+    }
+
+    default:
+        std::cerr << "Number of keys must be either 1 or 2.\n";
+        break;
+    }
+}
+
+int main(int argc, char* argv[])
+{
+    if (argc != 2)
+    {
+        std::cout << "Usage: program.exe [nrKeys]\n";
+        return 1; // important: don't continue to argv[1]
+    }
+
+    int nrKeys{};
+
+    try
+    {
+        nrKeys = std::stoi(argv[1]);
+    }
+    catch (...)
+    {
+        std::cerr << "nrKeys must be 1 or 2.\n";
+        return 1;
+    }
+
+    begin(nrKeys);
+
     return 0;
 }
