@@ -95,7 +95,75 @@ std::u32string utf8_to_utf32(std::string_view utf8)
     return output;
 }
 
+std::string utf32_to_utf8(std::u32string_view utf32)
+{
+    std::size_t len = utf32.length();
+    std::string output{};
+    std::size_t in_idx{};
 
+    while(in_idx < len)
+    {
+        int nrBytes{};
+        char32_t cur{utf32[in_idx++]};
+        if (cur < 0x0080){
+            nrBytes = 1;
+        } else if (cur < 0x0800) {
+            nrBytes = 2;
+        } else if ((0xD800 <= cur) && (cur <= 0xDFFF)) {
+            std::cout << "Character " << static_cast<int>(cur) << " part of UTF16 reserved list.\n";
+            std::exit(1);
+        } else if (cur < 0x10000) {
+            nrBytes = 3;
+        } else if (cur < 0x110000) {
+            nrBytes = 4;
+        } else {
+            std::cerr <<"Character " << static_cast<int>(cur) << " not representable in UTF8.\n";
+            std::exit(1);
+        }
+        
+        switch (nrBytes)
+        {
+        case 1:
+        {
+            unsigned char b1{static_cast<unsigned char>(cur)};
+            output.push_back(static_cast<char>(b1));
+            break;
+        }
+        case 2:
+        {
+            unsigned char b2{static_cast<unsigned char>((cur & 0x3F) | 0x80)};
+            unsigned char b1{static_cast<unsigned char>(((cur >> 6) & 0x1F) | 0xC0)};
+            output.push_back(static_cast<char>(b1));
+            output.push_back(static_cast<char>(b2));
+            break;
+        }
+        case 3:
+        {
+            unsigned char b3{static_cast<unsigned char>((cur & 0x3F) | 0x80)};
+            unsigned char b2{static_cast<unsigned char>(((cur >> 6) & 0x3F) | 0x80)};
+            unsigned char b1{static_cast<unsigned char>(((cur >> 12) & 0x0F) | 0xE0)};
+            output.push_back(static_cast<char>(b1));
+            output.push_back(static_cast<char>(b2));
+            output.push_back(static_cast<char>(b3));
+            break;
+        }
+        case 4:
+        {
+            unsigned char b4{static_cast<unsigned char>((cur & 0x3F) | 0x80)};
+            unsigned char b3{static_cast<unsigned char>(((cur >> 6) & 0x3F) | 0x80)};
+            unsigned char b2{static_cast<unsigned char>(((cur >> 12) & 0x3F) | 0x80)};
+            unsigned char b1{static_cast<unsigned char>(((cur >> 18) & 0x07) | 0xF0)};
+            output.push_back(static_cast<char>(b1));
+            output.push_back(static_cast<char>(b2));
+            output.push_back(static_cast<char>(b3));
+            output.push_back(static_cast<char>(b4));
+            break;
+        }
+        }
+    }
+
+    return output;
+}
 
 [[maybe_unused]] constexpr auto gg_ralph = std::to_array(U"AĂÂBCDEFGHIÎJKLMNOPQRSȘTȚUVWXYZ");
 int main()
