@@ -1,0 +1,7 @@
+# Intermediate files retained by Tectonic's diagnostic build options.
+*.aux
+*.log
+*.out
+*.toc
+*.xdv
+*.synctex.gz
