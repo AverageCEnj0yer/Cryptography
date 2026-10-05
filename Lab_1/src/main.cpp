@@ -1,15 +1,23 @@
+#include <algorithm>
+#include <cstdio>
+#include <ios>
 #include <iostream>
 #include <array>
+#include <limits>
 #include <string>
 #include <string_view>
 
 //Cryptography lab turned into mini UTF encoding library project!
 
-[[maybe_unused]] constexpr std::array g_ralph = {
-    U'A', U'Ă', U'Â', U'B', U'C', U'D', U'E', U'F', U'G', U'H', U'I', 
-    U'Î', U'J', U'K', U'L', U'M', U'N', U'O', U'P', U'Q', U'R', U'S', 
-    U'Ș', U'T', U'Ț', U'U', U'V', U'W', U'X', U'Y', U'Z'
-};
+// [[maybe_unused]] constexpr std::array gg_ralph = {
+//     U'A', U'Ă', U'Â', U'B', U'C', U'D', U'E', U'F', U'G', U'H', U'I', 
+//     U'Î', U'J', U'K', U'L', U'M', U'N', U'O', U'P', U'Q', U'R', U'S', 
+//     U'Ș', U'T', U'Ț', U'U', U'V', U'W', U'X', U'Y', U'Z'
+// };
+
+constexpr std::u32string_view g_ralph = U"AĂÂBCDEFGHIÎJKLMNOPQRSȘTȚUVWXYZ";
+constexpr std::u32string_view g_ralph_lower = U"aăâbcdefghiîjklmnopqrsștțuvwxyz";
+constexpr long long emptySpace{U' '};
 
 std::u32string utf8_to_utf32(std::string_view utf8)
 {
@@ -54,7 +62,7 @@ std::u32string utf8_to_utf32(std::string_view utf8)
                                             ((b2 & 0x3F) << 6) |
                                             (b3 & 0x3F)     );
 
-            if ((ch < 0x0800) || (ch > 0xFFFF) || ((ch > 0xD800) && (ch < 0xDFFF)))
+            if ((ch < 0x0800) || (ch > 0xFFFF) || ((ch >= 0xD800) && (ch <= 0xDFFF)))
             {
                 std::cerr << "3byte char with value out of bounds";
                 std::exit(2);
@@ -94,7 +102,6 @@ std::u32string utf8_to_utf32(std::string_view utf8)
 
     return output;
 }
-
 std::string utf32_to_utf8(std::u32string_view utf32)
 {
     std::size_t len = utf32.length();
@@ -165,24 +172,119 @@ std::string utf32_to_utf8(std::u32string_view utf32)
     return output;
 }
 
-[[maybe_unused]] constexpr auto gg_ralph = std::to_array(U"AĂÂBCDEFGHIÎJKLMNOPQRSȘTȚUVWXYZ");
+void ignoreLine()
+{
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}
+bool hasUnextractedInput()
+{
+    return (!std::cin.eof() && std::cin.peek() != '\n');
+}
+bool clearFailedExtraction()
+{
+    if (!std::cin || hasUnextractedInput())
+    {
+        if (std::cin.eof())
+            std::exit(0);
+        
+        std::cin.clear();
+        ignoreLine();
+        return true;
+    }
+    return false;
+}
+int getInt()
+{
+    while (true)
+    {
+        std::cout << "Enter a key value between 1 and 30: ";
+        int x{};
+        std::cin >> x;
+        if (x < 1 || x > 30) 
+            std::cin.setstate(std::ios::failbit);
+        if (clearFailedExtraction())
+        {
+            std::cout << "Oops, seems like you ARE INCOMPETENT ENOUGH TO WRITE A GOD DAMN NUMBER BETWEEN 1 AND 30. But it's ok, i forgive you. try again: ";
+            continue;
+
+        }
+
+        return x;
+    }
+}
+void normalize(std::u32string& str)
+{
+    for (char32_t& c : str)
+    {
+        // Accept Romanian cedilla variants and normalize them
+        // to the modern comma-below characters.
+
+        if (c == U'Ş')
+            c = U'Ș';
+        else if (c == U'Ţ')
+            c = U'Ț';
+        else if (c == U'ş')
+            c = U'ș';
+        else if (c == U'ţ')
+            c = U'ț';
+
+        // Convert lowercase Romanian alphabet to uppercase
+        // using our alphabet ordering.
+
+        auto pos{g_ralph_lower.find(c)};
+
+        if (pos != std::u32string_view::npos)
+            c = g_ralph[pos];
+    }
+}
+bool validCharacters(std::string& str)
+{
+    std::u32string message{utf8_to_utf32(str)};
+
+    normalize(message);
+    
+    auto it = std::ranges::find_if(message, [](char32_t x) {
+        return (g_ralph.find(x) == std::u32string_view::npos)
+            && (x != emptySpace);
+    });
+
+    if (it != message.end())
+    {
+        std::cout
+            << utf32_to_utf8(std::u32string(1, *it)) 
+            << " Is not a valid character!\n";
+
+        return false;
+    }
+
+    str = utf32_to_utf8(message);
+
+    return true;
+}
+std::string getMessage()
+{
+    while (true)
+    {
+        std::cout << "Insert your message: ";
+        std::string message{};
+        std::getline(std::cin >> std::ws, message);
+        if (!validCharacters(message))
+        {
+            continue;
+        }
+
+        return message;
+    }
+
+}
+
+
 int main()
 {
 
-    // std::string_view test{"😄ĂÂÎȘȚ"};
-    // std::u32string result{utf8_to_utf32(test)};
+    std::string input{getMessage()};
 
-    // for (const auto& i : result)
-    // {
-    //     const int found{(std::ranges::find(g_ralph, i) != g_ralph.end() ? 1 : 0)};
-    //     if (!found)
-    //     {
-    //         std::cout << "Character " << static_cast<int>(i) << " is not a valid letter fuck you\n";
-    //     }
-    // }
-
-
-
-
+    std::cout << input;
+    [[maybe_unused]] int key{getInt()};
     return 0;
 }
