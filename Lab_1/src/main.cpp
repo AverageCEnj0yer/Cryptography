@@ -279,6 +279,61 @@ std::string getMessage()
 }
 
 
+//Normal caesar
+std::string caesarCipher(
+    std::string_view message,
+    int key,
+    bool decrypt = false)
+{
+    std::u32string text{utf8_to_utf32(message)};
+
+    normalize(text);
+
+    //  spaces disappear before encryption.
+    std::erase(text, U' ');
+
+    std::u32string result{};
+    result.reserve(text.size());
+
+    for (char32_t c : text)
+    {
+        auto pos = g_ralph.find(c);
+
+        // This should normally already have been caught by
+        // validCharacters(), but keep the function safe (protective programming hehe)
+        if (pos == std::u32string_view::npos)
+        {
+            std::cerr << "Invalid Romanian character: "
+                      << utf32_to_utf8(std::u32string(1, c))
+                      << '\n';
+            std::exit(1);
+        }
+
+        std::size_t newPos{};
+
+        if (!decrypt)
+        {
+            newPos =
+                (pos + static_cast<std::size_t>(key))
+                % g_ralph.size();
+        }
+        else
+        {
+            // Adding 31 prevents unsigned underflow
+            newPos =
+                (pos + g_ralph.size()
+                 - static_cast<std::size_t>(key))
+                % g_ralph.size();
+        }
+
+        result.push_back(g_ralph[newPos]);
+    }
+
+    return utf32_to_utf8(result);
+}
+
+
+
 int main()
 {
 
