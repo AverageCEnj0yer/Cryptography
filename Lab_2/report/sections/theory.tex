@@ -1,0 +1,61 @@
+\section{Objective and scope}
+The aim of this laboratory was to recover an English plaintext encrypted with a monoalphabetic substitution cipher, without knowing the substitution key. The work was carried out manually using the Crypto Corner frequency-analysis activity \cite{tool}. It was a cryptanalysis exercise, with no programming implementation required.
+
+The solution combined letter frequencies with repeated words, common letter combinations, grammatical context, and consistency across the passage. The working record contains 19 deduction steps; several steps establish more than one letter pair. This report follows that order and illustrates how successive substitutions make the message readable. The ciphertext and the final literal decryption are included in the appendices.
+
+\section{Theoretical background}
+\subsection{Monoalphabetic substitution and its weakness}
+A monoalphabetic substitution replaces each plaintext letter with a fixed ciphertext letter throughout a message. For an alphabet $\mathcal{A}$ of 26 English letters, let $\pi$ be a permutation of that alphabet. Encryption and decryption are
+\begin{equation}
+  c_i=\pi(p_i),\qquad p_i=\pi^{-1}(c_i).
+\end{equation}
+A general substitution has $26!\approx4.03\times10^{26}$ possible keys. This is far larger than the 25 nonzero shifts of the English Caesar cipher, but the size of the key space does not remove statistical structure. Every occurrence of a plaintext letter receives the same replacement. Repeated letters, repeated words, and frequency patterns survive under different labels.
+
+The analysis therefore targets language structure rather than trying every key. If a plaintext letter appears $n$ times, its ciphertext replacement also appears $n$ times. When spaces and punctuation are retained, as in this cryptogram, they provide additional clues about word lengths, sentence boundaries, and possessive forms.
+
+\subsection{Letter-frequency analysis}
+The course material explains that letters occur at different rates in natural languages \cite{handout}. For a ciphertext containing $N$ letters, the observed percentage of a symbol $c$ is
+\begin{equation}
+  f_C(c)=\frac{n_C(c)}{N}\times100\%,
+\end{equation}
+where $n_C(c)$ counts that symbol. Uppercase and lowercase forms are counted together. Spaces, punctuation, digits, and line breaks are excluded from $N$.
+
+A sufficiently long ordinary passage often resembles the broad frequency profile of its language, although subject matter and writing style cause deviations. English is the relevant reference for this exercise. The Romanian frequencies in the handout illustrate the same language-dependent principle, but they are not the reference used to solve this English passage.
+
+\begin{table}[htbp]
+\centering
+\caption{English reference frequencies from the supplied course material (percent)}
+\label{tab:english}
+\small
+\begin{tabular}{rr@{\hspace{1.3cm}}rr}
+\hline
+Letter & Frequency & Letter & Frequency\\
+\hline
+A & 8.17 & N & 6.75\\
+B & 1.49 & O & 7.51\\
+C & 2.78 & P & 1.93\\
+D & 4.25 & Q & 0.09\\
+E & 12.70 & R & 5.99\\
+F & 2.23 & S & 6.33\\
+G & 2.01 & T & 9.06\\
+H & 6.09 & U & 2.76\\
+I & 6.97 & V & 0.98\\
+J & 0.15 & W & 2.36\\
+K & 0.77 & X & 0.15\\
+L & 4.03 & Y & 1.97\\
+M & 2.41 & Z & 0.07\\
+\hline
+\end{tabular}
+\end{table}
+
+The most frequent ciphertext symbol is a candidate for plaintext \texttt{e}, but this is a hypothesis, not a rule. Matching the sorted frequency lists mechanically can produce incorrect substitutions. A few likely pairs constrain the key; they do not uniquely establish the entire permutation. Each proposal must also fit words and remain consistent with previously accepted pairs.
+
+\subsection{Word patterns, digraphs and trigraphs}
+A digraph is a pair of letters and a trigraph is a group of three. The supplied material lists common English digraphs such as \texttt{TH}, \texttt{HE}, \texttt{AN}, \texttt{IN}, \texttt{ER}, \texttt{ON}, \texttt{RE}, and \texttt{ED}. Useful trigraphs include \texttt{THE}, \texttt{AND}, \texttt{THA}, \texttt{ENT}, \texttt{ION}, and \texttt{TIO}. A recurring pattern such as \texttt{tQe} can therefore suggest the word \texttt{the} and the pair \mapto{Q}{h}.
+
+Other clues include the ordinary one-letter English words \texttt{a} and \texttt{i}, common doubled letters such as \texttt{ss}, \texttt{ee}, \texttt{tt}, \texttt{oo}, and \texttt{ff}, and word shapes that survive substitution. Once several letters are known, a pattern such as \texttt{teYt} strongly suggests \texttt{text}. Context then tests the proposal across all occurrences, rather than accepting it because it fits one location.
+
+\subsection{Method and limitations}
+The working method was to compare frequencies, propose a substitution, inspect the partially decoded passage, and accept or reconsider the proposal based on additional words. Each ciphertext letter must have one consistent plaintext value; two ciphertext letters cannot both represent the same plaintext letter under the assumed permutation.
+
+Long messages usually provide more repeated evidence than short ones, but even a long passage can have unusual vocabulary. Proper names and missing spaces are especially poor starting points. Here, common words were solved first; names such as Khnumhotep became readable later. Human judgement guided this particular exercise. This does not imply that substitution ciphers cannot be attacked automatically; the report describes the manual method used in the laboratory.

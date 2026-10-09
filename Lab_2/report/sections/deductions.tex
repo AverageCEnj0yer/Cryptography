@@ -1,0 +1,50 @@
+\section{Step-by-step recovery of the substitution}
+\label{sec:deductions}
+The following sequence follows the 19 steps recorded during the exercise. The first decisions use frequency; later decisions rely increasingly on words revealed by earlier replacements. A candidate was useful when it explained several occurrences without contradicting the existing mapping.
+
+\subsection{Steps 1--7: establishing common letters}
+\begin{enumerate}
+\item \textbf{\mapto{V}{e}: the strongest frequency match.} Ciphertext \texttt{V} has 327 occurrences, approximately 12.74\% of all letters, and is the most frequent symbol. This closely matches the English reference for \texttt{e}, making it the initial hypothesis.
+
+\item \textbf{\mapto{W}{t}: the second major peak.} Ciphertext \texttt{W} occurs 276 times, approximately 10.75\%. Its high rank suggests \texttt{t}, even though this passage contains more of it than the average English percentage. Together, the first two replacements expose many occurrences of \texttt{tQe}.
+
+\item \textbf{\mapto{Q}{h}: recognizing \texttt{the}.} The repeated trigraph \texttt{tQe} is naturally read as \texttt{the}. This yields \texttt{h} and supplies word-level support for the earlier choices of \texttt{t} and \texttt{e}.
+
+\item \textbf{\mapto{T}{a}: recognizing \texttt{that}.} The pattern \texttt{thTt} becomes \texttt{that}. Ciphertext \texttt{T} also occurs as a one-letter word, supporting \texttt{a}. The agreement between a word pattern and a grammatical clue is stronger than a frequency guess alone.
+
+\item \textbf{\mapto{P}{s}: recognizing \texttt{these}.} The pattern \texttt{thePe} suggests \texttt{these}. Ciphertext \texttt{P} occurs 165 times, approximately 6.43\%, close to the English reference of 6.33\% for \texttt{s}. The screenshot rounds the observed value to 6.4\%.
+
+\item \textbf{\mapto{N}{o}: recognizing \texttt{to}.} The frequent two-letter pattern \texttt{tN} becomes \texttt{to}. The observed 205 occurrences, approximately 7.99\%, are compatible with a common vowel. This decision demonstrates why frequency ranks must be checked against words: \texttt{N} is third in the ciphertext ranking but represents \texttt{o}, not \texttt{a}.
+
+\item \textbf{\mapto{X}{i}: recognizing \texttt{it}.} The pattern \texttt{Xt} is read as \texttt{it}. The observed frequency, 198 occurrences or approximately 7.71\%, supports a common letter such as \texttt{i}. This also begins to reveal recurring short grammatical words elsewhere in the passage.
+\end{enumerate}
+
+\subsection{Steps 8--12: recovering phrases}
+\begin{enumerate}[resume]
+\item \textbf{\mapto{Z}{m}, \mapto{I}{r}, \mapto{G}{n}: a complete phrase.} The fragment \texttt{the saZe IeasoG as} becomes \texttt{the same reason as}. It supplies three mutually compatible replacements. Their frequencies remain plausible, but the readable phrase is the decisive evidence. The beginning of the message now contains \texttt{on a} and \texttt{nearSF}.
+
+\item \textbf{\mapto{O}{d}: matching both ends of a phrase.} The fragment \texttt{Oesire to reaO} becomes \texttt{desire to read}. The same unknown symbol occurs at the start of one word and the end of another; both positions support the same letter.
+
+\item \textbf{\mapto{F}{y}, \mapto{S}{l}, \mapto{J}{g}: the opening sentence.} The fragment \texttt{on a daF nearSF 4,000 Fears aJo} becomes ``on a day nearly 4,000 years ago''. The repeated \texttt{F} is explained consistently in \texttt{day}, \texttt{nearly}, and \texttt{years}. This step establishes \texttt{g}, which also resolves endings such as \texttt{doing} and \texttt{writing}.
+
+\item \textbf{\mapto{R}{w}, \mapto{H}{c}: recognizing \texttt{town called}.} The phrase \texttt{in a toRn Halled menet} becomes \texttt{in a town called menet}. The ordinary words provide the evidence; identifying the proper name \texttt{menet} in advance is unnecessary.
+
+\item \textbf{\mapto{C}{f}: \texttt{of} and \texttt{life}.} The fragment \texttt{story oC his lord's liCe} becomes \texttt{story of his lord's life}. The same substitution solves a common preposition and a contextually appropriate noun, strengthening the consistency of the partial key.
+\end{enumerate}
+
+\subsection{Steps 13--19: resolving the remaining observed symbols}
+\begin{enumerate}[resume]
+\item \textbf{\mapto{L}{k}: recognizing \texttt{knows}.} The fragment \texttt{world Lnows it} becomes \texttt{world knows it}. This resolves an uncommon letter using a familiar phrase rather than its low frequency alone.
+
+\item \textbf{\mapto{D}{u}, \mapto{A}{b}: recognizing \texttt{scribe} and \texttt{out}.} The fragment \texttt{a master scriAe sketched oDt} becomes \texttt{a master scribe sketched out}. The replacements also clarify words and names elsewhere, including \texttt{about}, \texttt{tomb}, and \texttt{Khnumhotep}.
+
+\item \textbf{\mapto{U}{p}: recognizing \texttt{hieroglyphs}.} The joined fragment \texttt{thehieroglyUhs} becomes \texttt{thehieroglyphs}. A word boundary can be restored for reading, giving ``the hieroglyphs'', but the missing space is independent of the substitution itself.
+
+\item \textbf{\mapto{B}{q}: recognizing \texttt{technique}.} The word \texttt{techniBue} becomes \texttt{technique}. Ciphertext \texttt{B} occurs only twice, so context is more informative than a frequency ranking for this rare letter.
+
+\item \textbf{\mapto{K}{v}: recognizing \texttt{even}.} The fragment \texttt{eKen the slightest} becomes \texttt{even the slightest}. The same pair also resolves words such as \texttt{developed} and \texttt{service}.
+
+\item \textbf{\mapto{Y}{x}: recognizing \texttt{text}.} The phrase \texttt{read the teYt} becomes \texttt{read the text}. This provides a clear context for a relatively rare letter: ciphertext \texttt{Y} appears eight times.
+
+\item \textbf{\mapto{E}{j}: recognizing \texttt{just}.} The fragment \texttt{instead of Eust writing} becomes \texttt{instead of just writing}. Ciphertext \texttt{E} appears only once. This final contextual deduction resolves the last symbol actually present in the cryptogram.
+\end{enumerate}

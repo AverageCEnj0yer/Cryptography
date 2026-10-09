@@ -1,0 +1,111 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[a4paper,top=2cm,bottom=2cm,left=2.5cm,right=2cm]{geometry}
+\usepackage{fontspec}
+\setmainfont{Liberation Serif}
+\setmonofont{Liberation Mono}
+\usepackage[english]{babel}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{array,tabularx,longtable}
+\usepackage{caption}
+\usepackage{enumitem}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage{fvextra}
+\PassOptionsToPackage{hyphens}{url}
+\usepackage[hidelinks,hypertexnames=false]{hyperref}
+\urlstyle{same}
+\input{metadata}
+\hypersetup{pdftitle={Laboratory Work No. 2: Cryptanalysis of Monoalphabetic Ciphers},pdfauthor={Balan Gabriel}}
+\setstretch{1.25}
+\setlength{\parindent}{1.1cm}
+\setlength{\parskip}{4pt}
+\setlength{\emergencystretch}{2em}
+\setcounter{tocdepth}{2}
+\titleformat{\section}{\large\bfseries}{\thesection}{0.65em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.65em}{}
+\captionsetup{font=small,labelfont=bf,skip=6pt,hypcap=false}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\setlist{itemsep=2pt,topsep=4pt}
+\fvset{fontfamily=tt,fontsize=\footnotesize,baselinestretch=1,
+  breaklines=true,breakanywhere=true}
+\newcommand{\mapto}[2]{\texttt{#1}$\,\to\,$\texttt{#2}}
+\newcommand{\sample}[1]{\VerbatimInput{data/#1}}
+\begin{document}
+
+% -----------------------------------------------------------------------------
+% Cover page: the requested layout, adapted to Cryptography.
+% -----------------------------------------------------------------------------
+\begin{titlepage}
+  \begin{center}
+    \IfFileExists{assets/UTM_Logo_English.jpeg}{%
+      \includegraphics[width=3.4cm]{assets/UTM_Logo_English.jpeg}\par
+    }{%
+      \fbox{\parbox[c][1.7cm][c]{3.4cm}{\centering\textbf{UTM LOGO}}}\par
+    }
+    \vspace{0.25cm}
+    {\bfseries\fontsize{14}{17}\selectfont
+      MINISTRY OF EDUCATION, CULTURE AND RESEARCH\par
+      OF THE REPUBLIC OF MOLDOVA\par
+      Technical University of Moldova\par
+      Faculty of Computers, Informatics and Microelectronics\par
+      Department of Software Engineering and Automation\par
+    }
+    \vspace{1.4cm}
+    {\bfseries\fontsize{16}{19}\selectfont \studentname\ \studentgroup\par}
+    \vspace{1.5cm}
+    {\bfseries\fontsize{36}{40}\selectfont Report\par}
+    \vspace{0.2cm}
+    {\itshape\fontsize{20}{24}\selectfont Laboratory Work No. 2\par}
+    {\bfseries\itshape\fontsize{20}{24}\selectfont Cryptography\par}
+    \vspace{0.8cm}
+    {\fontsize{20}{24}\selectfont Topic: \reporttopic\par}
+  \end{center}
+  \vfill
+  \begin{flushright}
+    {\fontsize{15}{18}\selectfont Checked by:}\par
+    \textbf{\supervisorname}, \textit{university assistant}
+  \end{flushright}
+  \vfill
+  \begin{center}
+    {\bfseries\fontsize{14}{17}\selectfont Chișinău -- 2026}
+  \end{center}
+\end{titlepage}
+
+\setstretch{1.15}
+\setlength{\parskip}{3pt}
+{\setstretch{1}\small\setlength{\parskip}{0pt}\tableofcontents}
+\clearpage
+\input{sections/theory}
+\clearpage
+\input{sections/analysis}
+\clearpage
+\input{sections/deductions}
+\clearpage
+\input{sections/progress}
+\clearpage
+\input{sections/results}
+\clearpage
+\input{sections/conclusions}
+\clearpage
+\begin{thebibliography}{9}
+\addcontentsline{toc}{section}{References}
+\bibitem{handout} \textit{Laboratory Work No. 2: Cryptanalysis of Monoalphabetic Ciphers}. Supplied course material, Sections 2.1--2.2. Theory and reference frequencies translated from Romanian for this report.
+\bibitem{tool} Daniel Rodriguez-Clark, Crypto Corner. \textit{Frequency Analysis: Breaking the Code}. Interactive activity used for the laboratory. Accessed 9 October 2026.\\
+\url{https://crypto.interactive-maths.com/frequency-analysis-breaking-the-code.html}
+\bibitem{records} Gabriel Balan. \textit{Laboratory Work No. 2 working records}. Supplied ciphertext, four frequency screenshots, ordered substitution notes, and intermediate plaintext extracts.
+\end{thebibliography}
+
+\clearpage
+\appendix
+\section{Complete supplied ciphertext}
+\label{app:ciphertext}
+The following transcription preserves the supplied letters, punctuation, line breaks, and missing spaces. Backslashes used to mark line breaks in the pasted message are formatting markers and are not part of the cryptogram. Case is ignored during frequency counting and substitution.
+{\VerbatimInput[fontsize=\fontsize{8.5}{10}\selectfont]{data/ciphertext.txt}}
+
+\clearpage
+\section{Literal decrypted text}
+\label{app:literal}
+This is the direct character-for-character result of the recovered mapping, with plaintext letters in lowercase. Unlike the reading version in Section~\ref{sec:plaintext}, it retains joined words, original line breaks, and the stray bullet. It provides an exact basis for re-encryption after ignoring ciphertext case.
+{\VerbatimInput[fontsize=\fontsize{8.5}{10}\selectfont]{data/plaintext-literal.txt}}
+\end{document}

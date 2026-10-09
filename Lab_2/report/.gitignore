@@ -1,0 +1,9 @@
+# Tectonic intermediate files and local PDF previews.
+*.aux
+*.log
+*.out
+*.toc
+*.xdv
+*.synctex.gz
+.preview/
+/data

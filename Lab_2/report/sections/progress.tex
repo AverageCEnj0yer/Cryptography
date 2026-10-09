@@ -1,0 +1,41 @@
+\section{Progressive decryption}
+\label{sec:progress}
+Each sample shows the same opening three lines, so the effect of accumulating substitutions can be compared directly. Uppercase characters are unresolved ciphertext; lowercase characters are recovered plaintext. Line wrapping is adjusted for page width. The grouping follows the supplied progress record. The full 19-step sequence is explained in Section~\ref{sec:deductions}.
+
+\subsection{After steps 1 and 2}
+Only \mapto{V}{e} and \mapto{W}{t} are known. The repeated pattern \texttt{tQe} becomes visible.
+\sample{stage-02.txt}
+
+\subsection{After step 3}
+The substitution \mapto{Q}{h} resolves \texttt{the}, giving a reliable anchor at several locations.
+\sample{stage-03.txt}
+
+\subsection{After step 4}
+The substitution \mapto{T}{a} reveals the one-letter word \texttt{a} and the word \texttt{that}.
+\sample{stage-04.txt}
+
+\subsection{After steps 5 and 6}
+The additional pairs \mapto{P}{s} and \mapto{N}{o} reveal common word fragments and make the sentence structure easier to follow.
+\sample{stage-06.txt}
+
+\subsection{After steps 7 and 8}
+Adding \texttt{i}, \texttt{m}, \texttt{r}, and \texttt{n} makes \texttt{on a}, \texttt{master}, and \texttt{his} readable. The broader passage supplies the phrase \texttt{the same reason as} used in step 8.
+\sample{stage-08.txt}
+
+\subsection{After steps 9 and 10}
+The opening now reads ``on a day nearly 4,000 years ago''. The new substitutions also reveal words such as \texttt{nile} and \texttt{story}.
+\sample{stage-10.txt}
+
+\subsection{After steps 11 and 12}
+The substitutions for \texttt{w}, \texttt{c}, and \texttt{f} expose ``in a town called'' and ``story of his lord's life''.
+\sample{stage-12.txt}
+
+\subsection{After steps 13--15}
+The remaining letters in \texttt{scribe}, \texttt{sketched}, and \texttt{hieroglyphs} are resolved. The opening sample happens to contain none of the symbols still awaiting steps 16--19; the rest of the passage still needs them.
+\sample{stage-15.txt}
+
+\subsection{After steps 16--19}
+The whole ciphertext is now readable. This opening sample is unchanged from the preceding one because the final four pairs are established elsewhere, in \texttt{technique}, \texttt{even}, \texttt{text}, and \texttt{just}.
+\sample{stage-19.txt}
+
+These samples illustrate why a short readable excerpt is not sufficient proof that the entire message has been solved. The final verification must cover every symbol and the complete passage.

@@ -1,0 +1,33 @@
+\section{Recovered key and final result}
+\subsection{The recovered substitution alphabet}
+Table~\ref{tab:key} records the direction used throughout the solution: ciphertext letters map to plaintext letters. The 19 steps identify 25 pairs because some steps establish several pairs at once.
+
+\begin{table}[htbp]
+\centering
+\caption{Ciphertext-to-plaintext substitution key}
+\label{tab:key}
+\small
+\begin{tabular}{c*{13}{c}}
+\hline
+Ciphertext & A & B & C & D & E & F & G & H & I & J & K & L & M\\
+Plaintext & b & q & f & u & j & y & n & c & r & g & v & k & z*\\
+\hline
+Ciphertext & N & O & P & Q & R & S & T & U & V & W & X & Y & Z\\
+Plaintext & o & d & s & h & w & l & a & p & e & t & i & x & m\\
+\hline
+\end{tabular}
+\par\smallskip\footnotesize *The pair \mapto{M}{z} is inferred by elimination; ciphertext M does not occur.
+\end{table}
+
+All 25 observed ciphertext letters have distinct plaintext values. The only unused plaintext letter is \texttt{z}; therefore, assuming a permutation of the full 26-letter alphabet, the remaining pair must be \mapto{M}{z}. No occurrence in this passage directly tests that pair.
+
+\subsection{Verification of the result}
+The recovered mapping explains the full passage consistently, including the common words used to derive it and the less common names that emerged later. It also preserves the expected repeated-letter structures. For example, a doubled ciphertext symbol must decrypt to a doubled plaintext letter, rather than requiring a different interpretation in each position.
+
+As a preparation check, the inverse mapping was applied to the literal decrypted text. It reproduced the supplied ciphertext exactly after case normalization, including its punctuation, spacing, and line breaks. This confirms consistent application of the recovered key; by itself, a round trip would not prove that a guessed key gives the intended English message. Here the readable text and the independent word clues provide that additional evidence. The 26 integer frequency counts also match the screenshot exactly, including the zero count for \texttt{M}.
+
+\subsection{Complete plaintext: reading version}
+\label{sec:plaintext}
+The following version applies the recovered key and restores obvious missing word boundaries and sentence capitalization. Paragraph breaks are editorial. The stray bullet before \texttt{proliferated} is omitted. No letter sequence is changed relative to the literal decryption apart from capitalization; the original joined words remain available in Appendix~\ref{app:literal}. The historical statements are part of the recovered passage, not separate findings established by this cryptanalysis exercise.
+
+\input{sections/plaintext}
