@@ -1,2 +1,8 @@
 .vscode
 \build
+
+#ignore all report creation files
+*/report/*
+
+# But do not ignore the main.pdf file
+!*/report/main.pdf

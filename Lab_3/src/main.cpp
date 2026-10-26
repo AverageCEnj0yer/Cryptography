@@ -239,8 +239,8 @@ void normalize(std::u32string& str)
         if (pos != std::u32string_view::npos)
             c = g_ralph[pos];
 
-        std::erase(str, emptySpace);
     }
+    std::erase(str, emptySpace);
 }
 bool validCharacters(std::string& str)
 {
@@ -257,7 +257,7 @@ bool validCharacters(std::string& str)
     {
         std::cout
             << utf32_to_utf8(std::u32string(1, *it)) 
-            << " Is not a valid character!\n";
+            << " Is not a valid character! Use A-Z or Romanian letters (ĂÂÎȘȚ), lowercase or uppercase.\n";
 
         return false;
     }
@@ -266,13 +266,14 @@ bool validCharacters(std::string& str)
 
     return true;
 }
-std::string getMessage()
+std::string getMessage(std::string_view prompt = "Insert your message: ")
 {
     while (true)
     {
-        std::cout << "Insert your message: ";
+        std::cout << prompt;
         std::string message{};
-        std::getline(std::cin >> std::ws, message);
+        if (!std::getline(std::cin >> std::ws, message))
+            std::exit(0);
         if (!validCharacters(message))
         {
             continue;
@@ -291,11 +292,11 @@ Formatted formatMessage(std::string_view m)
     output.reserve(mlen);
     
     size_t i{};
-    for(; i < mlen - 1; ++i) // -1 because last one could not have a pair and tryign to see next element of a lone letter causes ub
+    for(; i + 1 < mlen; ++i) // Only process letters that have a next element.
     {
         char32_t first{message[i]};
         bool same{first == message[i+1]};
-        char32_t second{same ? g_luChar : message[i+1]};
+        char32_t second{same ? (first == g_luChar ? U'X' : g_luChar) : message[i+1]};
 
         output.emplace_back(first, second);
 
@@ -303,19 +304,124 @@ Formatted formatMessage(std::string_view m)
 
     }
     if (i < mlen)
-        output.emplace_back(message[i], g_luChar);
+        output.emplace_back(message[i], message[i] == g_luChar ? U'X' : g_luChar);
+    return output;
+}
+
+using Matrix = std::array<std::array<char32_t, 6>, 5>;
+
+Matrix makeMatrix(std::u32string_view key)
+{
+    std::u32string letters{};
+    for (char32_t c : std::u32string(key) + std::u32string(g_ralph))
+    {
+        if (c != U'J' && letters.find(c) == std::u32string::npos)
+            letters += c;
+    }
+
+    Matrix matrix{};
+    for (size_t i{}; i < letters.size(); ++i)
+        matrix[i / 6][i % 6] = letters[i];
+    return matrix;
+}
+
+std::pair<size_t, size_t> findPosition(const Matrix& matrix, char32_t c)
+{
+    for (size_t row{}; row < 5; ++row)
+        for (size_t col{}; col < 6; ++col)
+            if (matrix[row][col] == c)
+                return {row, col};
+    std::exit(1); // Input has already been validated.
+}
+
+std::u32string playfair(const Matrix& matrix, const Formatted& message, bool decrypt)
+{
+    std::u32string output{};
+    size_t rowShift{decrypt ? 4u : 1u};
+    size_t colShift{decrypt ? 5u : 1u};
+    for (const auto& [first, second] : message)
+    {
+        auto [r1, c1] = findPosition(matrix, first);
+        auto [r2, c2] = findPosition(matrix, second);
+        if (r1 == r2)
+        {
+            c1 = (c1 + colShift) % 6;
+            c2 = (c2 + colShift) % 6;
+        }
+        else if (c1 == c2)
+        {
+            r1 = (r1 + rowShift) % 5;
+            r2 = (r2 + rowShift) % 5;
+        }
+        else
+            std::swap(c1, c2);
+
+        output += matrix[r1][c1];
+        output += matrix[r2][c2];
+    }
     return output;
 }
 
 int main(/* int argc, char* argv[] */)
 {
-
-    std::string input{getMessage()};
-    Formatted styled{formatMessage(input)};
-
-    for(const auto& pair : styled)
+    while (true)
     {
-        std::cout << utf32_to_utf8(std::u32string(1, pair.first)) << utf32_to_utf8(std::u32string(1, pair.second)) << " ";
+        std::cout << "\n1. Encrypt\n2. Decrypt\n0. Exit\nChoose: ";
+        std::string choice{};
+        if (!std::getline(std::cin >> std::ws, choice) || choice == "0")
+            break;
+        if (choice != "1" && choice != "2")
+        {
+            std::cout << "Choose 1, 2 or 0.\n";
+            continue;
+        }
+
+        std::u32string key{};
+        do
+        {
+            key = utf8_to_utf32(getMessage("Insert your key (at least 7 letters): "));
+            if (key.size() < 7)
+                std::cout << "The key must contain at least 7 letters.\n";
+        } while (key.size() < 7);
+
+        Matrix matrix{makeMatrix(key)};
+        std::cout << "Matrix:\n";
+        for (const auto& row : matrix)
+        {
+            for (char32_t c : row)
+                std::cout << utf32_to_utf8(std::u32string(1, c)) << ' ';
+            std::cout << '\n';
+        }
+
+        std::string input{getMessage()};
+        Formatted styled{};
+        bool decrypt{choice == "2"};
+        if (decrypt)
+        {
+            std::u32string message{utf8_to_utf32(input)};
+            if (message.size() % 2 != 0)
+            {
+                std::cout << "Ciphertext must contain an even number of letters.\n";
+                continue;
+            }
+            for (size_t i{}; i < message.size(); i += 2)
+                styled.emplace_back(message[i], message[i + 1]);
+        }
+        else
+            styled = formatMessage(input);
+
+        std::cout << "Formatted input: ";
+        for (const auto& [first, second] : styled)
+            std::cout << utf32_to_utf8(std::u32string{first, second}) << ' ';
+        std::cout << '\n';
+
+        std::u32string result{playfair(matrix, styled, decrypt)};
+        std::cout << (decrypt ? "Decrypted: " : "Encrypted: ")
+                  << utf32_to_utf8(result) << '\n';
+        std::cout << (decrypt ? "Formatted decrypted: " : "Formatted encrypted: ");
+        for (size_t i{}; i < result.size(); i += 2)
+            std::cout << utf32_to_utf8(result.substr(i, 2)) << ' ';
+        std::cout << '\n';
     }
 
     return 0;
